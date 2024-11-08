@@ -33,3 +33,7 @@ c_dict = {'some 3 mais 2':'divisão'}  # dicionário inicial com uma chave e val
 s, c = soma(3, 2, c_dict)
 print(f"Resultado da soma: {s}")
 print("Cache final:", c)
+
+# Salva o cache final em um arquivo JSON
+with open('cache.json', 'w', encoding='utf-8') as json_file:
+    json.dump(c, json_file, ensure_ascii=False, indent=4)
