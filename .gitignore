@@ -29,6 +29,7 @@ nosetests.xml
 coverage.xml
 *.cover
 *.json
+.json
 
 # macOS
 .DS_Store
