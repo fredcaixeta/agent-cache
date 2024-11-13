@@ -2,7 +2,6 @@ import math
 import json
 
 # Advanced calculator in Python
-# Function to perform addition
 class Handle_Math:
     def __init__(self, cache=None):
         self.cache = cache
@@ -32,6 +31,7 @@ class Handle_Math:
         with open("history.json", "w", encoding="utf-8") as json_file:
             json.dump(data, json_file, indent=4, ensure_ascii=False)
         
+    # Function to perform addition
     def add(self, x, y):
         key = next(iter(self.cache))  # Pega a primeira chave do dicionário
         print(f"self.cache: {self.cache}")
@@ -41,35 +41,42 @@ class Handle_Math:
     # Function to perform subtraction
     def subtract(x, y):
         return x - y
+    
     # Function to perform multiplication
     def multiply(x, y):
         return x * y
+    
     # Function to perform division
     def divide(x, y):
         if y == 0:
             return "Error! Division by zero."
         else:
             return x / y
+        
     # Function to perform power calculation (x^y)
     def power(x, y):
         return math.pow(x, y)
+    
     # Function to calculate square root
     def square_root(x):
         if x < 0:
             return "Error! Negative number cannot have a real square root."
         return math.sqrt(x)
-    # Function to calculate logarithm (base 10)
     
+    # Function to calculate logarithm (base 10)
     def logarithm(x):
         if x <= 0:
             return "Error! Logarithm undefined for zero or negative numbers."
         return math.log10(x)
+    
     # Function to calculate sine of an angle (in degrees)
     def sine(x):
         return math.sin(math.radians(x))
+    
     # Function to calculate cosine of an angle (in degrees)
     def cosine(x):
         return math.cos(math.radians(x))
+    
     # Function to calculate tangent of an angle (in degrees)
     def tangent(x):
         return math.tan(math.radians(x))
