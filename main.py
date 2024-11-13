@@ -78,7 +78,7 @@ def post_process_response(result):
     
     return answer_found, (tool, args)
 
-def myAgent(query):
+def myAgent(query, query_dict):
     agent_scratchpad = ""
     chain = prompt | client | parse
     #print(f"This is the chain: {chain}")
@@ -95,19 +95,22 @@ def myAgent(query):
         
         #print(f"response: {response}")
         if answer_found:
-            print("\n")
-            print(f"agent_scratchpad: {agent_scratchpad}")
-            print(f"req: {req}")
+            # print("\n")
+            # print(f"agent_scratchpad: {agent_scratchpad}")
+            # print(f"req: {req}")
             agent_scratchpad = f"{agent_scratchpad}{req}"
             return response, agent_scratchpad
         else:
-            observation = tools.call_tools(response[0], response[1])
-            #print(f"\nObervation: {observation}\nThought:", end=" ")
+            calc = tools.Handle_Math(cache=query_dict)
+            observation = calc.call_tools(response[0], response[1])
+            # print(f"\nObervation: {observation}\nThought:", end=" ")
             agent_scratchpad = f"{agent_scratchpad}{req}\nObervation: {observation}\nThought:"
         count+=1  
 
 if __name__ == "__main__":
-    query = "Alfred buys an old scooter for Rs. 4700 and spends Rs. 800 on its repairs. If he sells the scooter for Rs. 5800, his gain percent is...?"
-    print("\n")
-    res, agent_scratchpad = myAgent(query=query)
-    #print(agent_scratchpad)
+    query = "Quanto é 5 mais 2? E o resultado multiplicado por 3.2?"
+    query_dict = {query:{}}
+    res, agent_scratchpad = myAgent(query=query, query_dict=query_dict)
+    print(agent_scratchpad)
+    calc = tools.Handle_Math(cache=query_dict)
+    calc.handle_cache()
