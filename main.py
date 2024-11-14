@@ -1,4 +1,7 @@
 import gen_tools as tools
+from llm_gate import Gate_Cache
+
+import json
 
 from langchain_core.prompts import PromptTemplate
 from langchain_core.messages import AIMessage
@@ -39,7 +42,26 @@ client = ChatGroq(
 def parse(ai_message: AIMessage) -> str:
     """Parse the AI message."""
     #print("Using parse")
-    print(f"ai message: {ai_message}")
+    tokens = []
+    times = []
+    tokens.append(ai_message.response_metadata.get('token_usage').get('total_tokens'))
+    times.append(ai_message.response_metadata.get('token_usage').get('total_time'))
+    with open("token_usage.txt", "w", encoding="utf-8") as file:
+        token = 0
+        for token in tokens:
+            token = token + token 
+        token = str(token)
+        file.write(token)
+    
+    with open("total_time.txt", "w", encoding="utf-8") as file:
+        time = 0
+        for time in times:
+            time = time + time 
+        time = str(time)
+        file.write(time)
+        
+    #print(f"Usage: {ai_message.response_metadata.get('token_usage').get('total_tokens')} tokens")
+    #print(f"Total time: {ai_message.response_metadata.get('token_usage').get('total_time')} seconds")
     result = ai_message.content
     if result.lower().startswith("thought"):
         result = result[8:].strip()
@@ -69,6 +91,7 @@ def post_process_response(result):
         raise Exception("parameters not detected by model")
     else:
         params_list = parameters.split(",")
+        #print(f"params_list: {params_list}")
         func = params_list[0].strip()
         args = {}
         args["func"] = func
@@ -103,14 +126,85 @@ def myAgent(query, query_dict):
         else:
             calc = tools.Handle_Math(cache=query_dict)
             observation = calc.call_tools(response[0], response[1])
+            
             # print(f"\nObervation: {observation}\nThought:", end=" ")
-            agent_scratchpad = f"{agent_scratchpad}{req}\nObervation: {observation}\nThought:"
-        count+=1  
-
+            agent_scratchpad = f"{agent_scratchpad}{req}\nObservation: {observation}\nThought:"
+            
+        count+=1
+        
+def handle_str_json(dado):
+    data_str = dado.replace("'", "\"")  # Substitui aspas simples por aspas duplas
+    try:
+        data_json = data_str
+        data_dict = json.loads(data_json)
+    except:
+        data_json = "{" + data_str + "}"
+        data_dict = json.loads(data_json)
+    # Convertendo para JSON
+    data_dict = json.loads(data_json)
+    return data_dict
+        
+def myAgent_Cache(llm_query):
+    with open("history_math.json", "r", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+    #print(f"todas as queries com os calculos: {data}")
+    #print(f"nova query formulada pela llm: {llm_query}")
+    
+    for key in data:
+        #print(key)
+        if str(key).strip() == str(llm_query).strip():
+            print("match!") # match! aqui foi encontrado a query que coincide com a query do historico
+            pass
+            break
+    
+    llm_data = Gate.llm_new_query(str(data)) # entregar à LLM a query "correta", mas receber de volta ajustada - com os numeros da atual query ajustados no dicionario
+    llm_data = handle_str_json(llm_data)
+    
+    key = next(iter(llm_data)) #pegando a nova key do novo json da nova query
+    
+    actions_keys = llm_data
+    
+    for action, values in actions_keys.items():
+        calc = tools.Handle_Math(cache=False) # False -> do not store info for cache - would be duplicate
+        
+        args = {
+            'func': action,
+            'x': values[0],
+        }
+        # Inclui `y` se houver dois valores
+        if len(values) > 1:
+            args['y'] = values[1]
+            
+        observation = calc.call_tools('calculate', args)
+        
+        print(f"Observation: {observation}")
+        
 if __name__ == "__main__":
-    query = "Quanto é 5 mais 2? E o resultado multiplicado por 3.2?"
-    query_dict = {query:{}}
-    res, agent_scratchpad = myAgent(query=query, query_dict=query_dict)
-    print(agent_scratchpad)
-    calc = tools.Handle_Math(cache=query_dict)
-    calc.handle_cache()
+    cache = True # True or False - Either go with strategy of cache, or not
+    query = "If I settle my $8,000 debt now, what would the total be with a 10% discount?"
+    
+    
+    print("******************************")
+    # Check if a similar query is found in History of Queries
+    Gate = Gate_Cache(query=query)
+    llm_query = Gate.check_chache()
+    
+    if cache and llm_query: # encontrada uma query parecida do .txt pela LLM
+        print("Cache Strategy: ON")
+        myAgent_Cache(llm_query=llm_query)
+
+    else:
+        print("Cache Strategy: OFF")
+        query_dict = {query:{}}
+        res, agent_scratchpad = myAgent(query=query, query_dict=query_dict)
+        
+        #print(f"Query: {query}")
+        write_file_history = tools.Handle_Math(query=query)
+        _ = write_file_history.handle_history_queries()
+        _ = tools.Handle_Math(cache=query_dict)
+        print(agent_scratchpad)
+        
+    print("******************************")
+        # calc = tools.Handle_Math(cache=query_dict)
+        # calc.handle_cache()
+      
