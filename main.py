@@ -195,7 +195,7 @@ if __name__ == "__main__":
 
     else:
         print("Cache Strategy: OFF")
-        query_dict = {query:{}}
+        query_dict = {query:[]}
         res, agent_scratchpad = myAgent(query=query, query_dict=query_dict)
         
         #print(f"Query: {query}")
