@@ -198,7 +198,7 @@ if __name__ == "__main__":
         print("Cache Strategy: ON")
         Gate = Gate_Cache(query=query)
         # Check if a similar query is found in History of Queries
-        llm_query = Gate.check_chache()
+        llm_query = Gate.check_cache()
         if llm_query:
             myAgent_Cache(llm_query=llm_query)
         else:

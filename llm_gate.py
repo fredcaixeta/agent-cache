@@ -13,7 +13,7 @@ class Gate_Cache():
     def __init__(self, query) -> None:
         self.query = query
     
-    def check_chache(self):
+    def check_cache(self):
         print("Encontrando uma query semelhante no histórico de caches...")
         
         system_message = (
