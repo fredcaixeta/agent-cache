@@ -38,3 +38,6 @@ coverage.xml
 # Windows
 Thumbs.db
 ehthumbs.db
+
+#etc
+teste.py
