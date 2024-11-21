@@ -37,7 +37,7 @@ class Gate_Cache():
         
         llm_query = self.GroqCompletion(system_message=system_message, query=self.query)
         
-        print("The LLM found a similar query:\n")
+        print("O LLM encontrou uma query similar:\n")
         
         return llm_query
     
