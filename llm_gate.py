@@ -12,7 +12,7 @@ from transformers import AutoTokenizer
 load_dotenv()
 
 class Gate_Cache():
-    def __init__(self, query) -> None:
+    def __init__(self, query):
         self.query = query
         # Inicialize o tokenizer
         self.tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-uncased")
@@ -66,7 +66,11 @@ class Gate_Cache():
         # Tokenize o query e o system_message
         system_message_tokens = self.tokenizer(system_message, return_tensors="pt", truncation=True, padding=True)
         query_tokens = self.tokenizer(query, return_tensors="pt", truncation=True, padding=True)
-
+        
+        client = Groq(
+            api_key=os.environ.get("groq_key")    
+        )
+        
         # Supondo que o Groq aceite `input_ids`
         chat_completion = client.chat.completions.create(
             input_ids={
