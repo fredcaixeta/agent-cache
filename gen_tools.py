@@ -42,7 +42,8 @@ class Handle_Math:
         if self.cache:
             key = next(iter(self.cache))  # Pega a primeira chave do dicionário
             #print(f"self.cache: {self.cache}")
-            self.cache[key]['add'] = (x,y)
+            new_calculation = {'add':(x,y)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         return x + y
     
@@ -50,7 +51,8 @@ class Handle_Math:
     def subtract(self, x, y):
         if self.cache:
             key = next(iter(self.cache))
-            self.cache[key]['subtract'] = (x,y)
+            new_calculation = {'subtract':(x,y)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         return x - y
     
@@ -58,7 +60,8 @@ class Handle_Math:
     def multiply(self, x, y):
         if self.cache:
             key = next(iter(self.cache))
-            self.cache[key]['multiply'] = (x,y)
+            new_calculation = {'multiply':(x,y)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         return x * y
     
@@ -66,7 +69,8 @@ class Handle_Math:
     def divide(self, x, y):
         if self.cache:
             key = next(iter(self.cache))
-            self.cache[key]['divide'] = (x,y)
+            new_calculation = {'divide':(x,y)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         if y == 0:
             return "Error! Division by zero."
@@ -77,7 +81,8 @@ class Handle_Math:
     def power(self, x, y):
         if self.cache:
             key = next(iter(self.cache))
-            self.cache[key]['power'] = (x,y)
+            new_calculation = {'power':(x,y)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         return math.pow(x, y)
     
@@ -85,7 +90,8 @@ class Handle_Math:
     def square_root(self, x):
         if self.cache:
             key = next(iter(self.cache))
-            self.cache[key]['square_root'] = (x)
+            new_calculation = {'square_root':(x)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         if x < 0:
             return "Error! Negative number cannot have a real square root."
@@ -95,7 +101,8 @@ class Handle_Math:
     def logarithm(self, x):
         if self.cache:
             key = next(iter(self.cache))
-            self.cache[key]['logarithm'] = (x)
+            new_calculation = {'logarithm':(x)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         if x <= 0:
             return "Error! Logarithm undefined for zero or negative numbers."
@@ -105,7 +112,8 @@ class Handle_Math:
     def sine(self, x):
         if self.cache:
             key = next(iter(self.cache))
-            self.cache[key]['sine'] = (x)
+            new_calculation = {'sine':(x)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         return math.sin(math.radians(x))
     
@@ -113,7 +121,8 @@ class Handle_Math:
     def cosine(self, x):
         if self.cache:
             key = next(iter(self.cache))
-            self.cache[key]['cosine'] = (x)
+            new_calculation = {'cosine':(x)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         return math.cos(math.radians(x))
     
@@ -121,14 +130,16 @@ class Handle_Math:
     def tangent(self, x):
         if self.cache:
             key = next(iter(self.cache))
-            self.cache[key]['tangent'] = (x)
+            new_calculation = {'tangent':(x)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         return math.tan(math.radians(x))
     
     def round(self, x, y):
         if self.cache:
             key = next(iter(self.cache))
-            self.cache[key]['round'] = (x,y)
+            new_calculation = {'round':(x,y)}
+            self.cache[key].append(new_calculation)
             self.handle_cache()
         return round(x, int(y))    
 
