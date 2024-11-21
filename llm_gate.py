@@ -14,6 +14,8 @@ class Gate_Cache():
         self.query = query
     
     def check_chache(self):
+        print("Encontrando uma query semelhante no histórico de caches...")
+        
         system_message = (
             "Você receberá um histórico de queries. O usuário entregará mais uma query. Preciso que você me diga com qual query do histórico a query do usuário se aproxima. Responda apenas com a query semelhante."
         )   
@@ -35,9 +37,13 @@ class Gate_Cache():
         
         llm_query = self.GroqCompletion(system_message=system_message, query=self.query)
         
+        print("The LLM found a similar query:\n")
+        
         return llm_query
     
     def llm_new_query(self, old_query):
+        print("Ajustando a cache-query para estar de acordo com os valores atuais...")
+        
         system_message = (
             "Você receberá um histórico de query de usuário e a sequencia necessária para se fazer as contas matemáticas. O usuário irá entregar uma nova query. Preciso que você ajuste a query dele ao molde da query anterior. Retorne apenas a query ajustada."
         )
@@ -45,6 +51,8 @@ class Gate_Cache():
         system_message = system_message + old_query
                 
         o = self.GroqCompletion(system_message=system_message, query=self.query)
+        
+        print("The LLM found a similar query:\n")
         
         return o
 
@@ -69,8 +77,8 @@ class Gate_Cache():
         # Fazendo a chamada para obter a resposta do modelo
         chat_completion = client.chat.completions.create(messages=messages, model='llama-3.1-70b-versatile')
 
-        print(f"Response Groq: {chat_completion.choices[0].message.content}")
-        print(f"Total Tokens Groq: {chat_completion.usage.total_tokens}")
+        print(f"{chat_completion.choices[0].message.content}")
+        print(f"Total de Tokens: {chat_completion.usage.total_tokens}")
         
         return chat_completion.choices[0].message.content
-
+-

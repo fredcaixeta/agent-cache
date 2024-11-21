@@ -190,17 +190,16 @@ def myAgent_Cache(llm_query):
 
         
 if __name__ == "__main__":
-    cache = True # True or False - Either go with strategy of cache, or not
+    cache = False # True or False - Either go with strategy of cache, or not
     query = "If I settle my $1,000 debt now, what would the total be with a 10% discount?"
-    
     
     print("******************************")
     if cache: # encontrada uma query parecida do .txt pela LLM
+        print("Cache Strategy: ON")
         Gate = Gate_Cache(query=query)
         # Check if a similar query is found in History of Queries
         llm_query = Gate.check_chache()
         if llm_query:
-            print("Cache Strategy: ON")
             myAgent_Cache(llm_query=llm_query)
         else:
             print("No Similar Query found in History. Cancelling Cache Strategy.")
