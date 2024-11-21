@@ -14,9 +14,8 @@ load_dotenv()
 class Gate_Cache():
     def __init__(self, query):
         self.query = query
-        # Inicialize o tokenizer
-        self.tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-uncased")
-    
+        self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")  # Escolha um tokenizer adequado.
+
     def check_cache(self):
         print("Encontrando uma query semelhante no histórico de caches...")
 
@@ -63,22 +62,38 @@ class Gate_Cache():
 
     # Função para criar uma conclusão usando a API da OpenAI
     def GroqCompletion(self, system_message, query):
-        # Tokenize o query e o system_message
-        system_message_tokens = self.tokenizer(system_message, return_tensors="pt", truncation=True, padding=True)
-        query_tokens = self.tokenizer(query, return_tensors="pt", truncation=True, padding=True)
-        
         client = Groq(
-            api_key=os.environ.get("groq_key")    
+            api_key=os.environ.get("groq_key")
         )
-        
-        # Supondo que o Groq aceite `input_ids`
-        chat_completion = client.chat.completions.create(
-            input_ids={
-                "system": system_message_tokens["input_ids"].tolist(),
-                "user": query_tokens["input_ids"].tolist()
+
+        # Tokenizar system_message e query
+        system_message_tokenized = self.tokenizer(system_message, return_tensors="pt", truncation=True, padding=True)
+        query_tokenized = self.tokenizer(query, return_tensors="pt", truncation=True, padding=True)
+
+        # Vetores de tokens
+        system_message_vectors = system_message_tokenized["input_ids"].tolist()[0]
+        query_vectors = query_tokenized["input_ids"].tolist()[0]
+
+        print(f"Vetores de tokens (System): {system_message_vectors}")
+        print(f"Vetores de tokens (Query): {query_vectors}")
+
+        # Decodificar os tokens para strings antes de enviar à API
+        system_message_decoded = self.tokenizer.decode(system_message_vectors, skip_special_tokens=True)
+        query_decoded = self.tokenizer.decode(query_vectors, skip_special_tokens=True)
+
+        messages = [
+            {
+                "role": "system",
+                "content": system_message_decoded
             },
-            model="llama-3.1-70b-versatile"
-        )
+            {
+                "role": "user",
+                "content": query_decoded
+            }
+        ]
+
+        # Fazendo a chamada para obter a resposta do modelo
+        chat_completion = client.chat.completions.create(messages=messages, model='llama-3.1-70b-versatile')
 
         print(f"Resposta: {chat_completion.choices[0].message.content}")
         print(f"Total de Tokens: {chat_completion.usage.total_tokens}")
