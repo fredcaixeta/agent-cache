@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Gate_Cache():
-    def __init__(self, query) -> None:
+    def __init__(self, query):
         self.query = query
     
     def check_cache(self):
