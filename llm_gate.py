@@ -81,4 +81,3 @@ class Gate_Cache():
         print(f"Total de Tokens: {chat_completion.usage.total_tokens}")
         
         return chat_completion.choices[0].message.content
--
