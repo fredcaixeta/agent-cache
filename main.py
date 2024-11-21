@@ -162,36 +162,44 @@ def myAgent_Cache(llm_query):
     
     key = next(iter(llm_data)) #pegando a nova key do novo json da nova query
     
-    actions_keys = llm_data
+    actions_keys = llm_data[key]
     
-    for action, values in actions_keys.items():
-        calc = tools.Handle_Math(cache=False) # False -> do not store info for cache - would be duplicate
-        
-        args = {
-            'func': action,
-            'x': values[0],
-        }
-        # Inclui `y` se houver dois valores
-        if len(values) > 1:
-            args['y'] = values[1]
-            
-        observation = calc.call_tools('calculate', args)
-        
-        print(f"Observation: {observation}")
+    for action_dict in actions_keys:  # Itera sobre cada dicionário na lista
+        # Extrai a ação (chave) e os valores (lista de números)
+        for action, values in action_dict.items():
+            calc = tools.Handle_Math(cache=False)  # False -> do not store info for cache - would be duplicated
+
+            # Configura os argumentos para a função de cálculo
+            args = {
+                'func': action,
+                'x': values[0],
+            }
+
+            # Inclui `y` se houver dois valores
+            if len(values) > 1:
+                args['y'] = values[1]
+
+            # Chama a função e obtém o resultado
+            observation = calc.call_tools('calculate', args)
+
+            print(f"Observation: {observation}")
+
         
 if __name__ == "__main__":
     cache = True # True or False - Either go with strategy of cache, or not
-    query = "If I settle my $8,000 debt now, what would the total be with a 10% discount?"
+    query = "If I settle my $1,000 debt now, what would the total be with a 10% discount?"
     
     
     print("******************************")
-    # Check if a similar query is found in History of Queries
-    Gate = Gate_Cache(query=query)
-    llm_query = Gate.check_chache()
-    
-    if cache and llm_query: # encontrada uma query parecida do .txt pela LLM
-        print("Cache Strategy: ON")
-        myAgent_Cache(llm_query=llm_query)
+    if cache: # encontrada uma query parecida do .txt pela LLM
+        Gate = Gate_Cache(query=query)
+        # Check if a similar query is found in History of Queries
+        llm_query = Gate.check_chache()
+        if llm_query:
+            print("Cache Strategy: ON")
+            myAgent_Cache(llm_query=llm_query)
+        else:
+            print("No Similar Query found in History. Cancelling Cache Strategy.")
 
     else:
         print("Cache Strategy: OFF")
