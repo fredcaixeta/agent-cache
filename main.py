@@ -163,8 +163,8 @@ def myAgent_Cache(llm_query):
     key = next(iter(llm_data)) #pegando a nova key do novo json da nova query
     
     actions_keys = llm_data[key]
-    
-    for action_dict in actions_keys:  # Itera sobre cada dicionário na lista
+    length = len(actions_keys)
+    for i, action_dict in enumerate(actions_keys):  # Itera com índice e item
         # Extrai a ação (chave) e os valores (lista de números)
         for action, values in action_dict.items():
             calc = tools.Handle_Math(cache=False)  # False -> do not store info for cache - would be duplicated
@@ -182,7 +182,11 @@ def myAgent_Cache(llm_query):
             # Chama a função e obtém o resultado
             observation = calc.call_tools('calculate', args)
 
-            print(f"Observation: {observation}")
+            # Verifica se é a última operação
+            if i == length - 1:  # O índice do último item é len(actions_keys) - 1
+                print(f"Cache Observation: {action} Final Response - {observation}")
+            else:
+                print(f"Cache Observation: {action} Response - {observation}")
 
         
 if __name__ == "__main__":
