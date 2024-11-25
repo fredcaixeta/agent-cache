@@ -187,6 +187,37 @@ def myAgent_Cache(llm_query):
                 print(f"Cache Observation: {action} Final Response - {observation}")
             else:
                 print(f"Cache Observation: {action} Response - {observation}")
+                
+def lambda_handler():
+    cache = False # True or False - Either go with strategy of cache, or not
+    query = "If I settle my $1,000 debt now, what would the total be with a 10% discount?"
+    
+    print("******************************")
+    if cache: # encontrada uma query parecida do .txt pela LLM
+        print("Cache Strategy: ON")
+        Gate = Gate_Cache(query=query)
+        # Check if a similar query is found in History of Queries
+        llm_query = Gate.check_cache()
+        if llm_query:
+            myAgent_Cache(llm_query=llm_query)
+        else:
+            print("No Similar Query found in History. Cancelling Cache Strategy.")
+
+    else:
+        print("Cache Strategy: OFF")
+        query_dict = {query:[]}
+        res, agent_scratchpad = myAgent(query=query, query_dict=query_dict)
+        
+        #print(f"Query: {query}")
+        write_file_history = tools.Handle_Math(query=query)
+        _ = write_file_history.handle_history_queries()
+        _ = tools.Handle_Math(cache=query_dict)
+        print(agent_scratchpad)
+        
+    print("******************************")
+        # calc = tools.Handle_Math(cache=query_dict)
+        # calc.handle_cache()
+      
 
         
 if __name__ == "__main__":
